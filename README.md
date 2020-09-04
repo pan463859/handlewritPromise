@@ -1,0 +1,2 @@
+# handlewritPromise
+简单版本的promisepolyfill，用于对promise的理解
