@@ -1,13 +1,13 @@
 //自定义promise的函数模块 
-(function () {
-    const PENDIING = 'pending'
-    const RESOLVED = 'resolved'
-    const REJECTED = 'rejected'
-    /**
-     * Promise 构造函数
-     * excutor 执行器函数（同步执行）
-     */
-    function Promise(excutor) {
+const PENDIING = 'pending'
+const RESOLVED = 'resolved'
+const REJECTED = 'rejected'
+class Promise {
+    constructor(excutor) {
+        /**
+           * Promise 构造函数
+           * excutor 执行器函数（同步执行）
+           */
         this.status = PENDIING
         this.data = undefined
         this.callbacks = []
@@ -55,23 +55,21 @@
         catch (erro) {
             reject(erro)
         }
-
-
-
     }
-
     /**
-     * Promise的原型对象的then()
-     * 指定成功和失败的回调函数
-     * 返回一个新的promise对象
-     */
-    Promise.prototype.then = function (onresolved, onrejected) {
+    * Promise的原型对象的then()
+    * 指定成功和失败的回调函数
+    * 返回一个新的promise对象
+    */
+    then(onresolved, onrejected) {
         //必须保持this为调用对象的上下文，不能使用箭头函数
         const _this = this
         onresolved = typeof onresolved === 'function' ? onresolved : value => value
 
         //指定默认的失败回调，传递reason实现异常穿透
-        onrejected = typeof onrejected === 'function' ? onrejected : reason => { throw reason }
+        onrejected = typeof onrejected === 'function' ? onrejected : reason => {
+            throw reason
+        }
 
         //返回一个新的Promise对象
         return new Promise((resolve, reject) => {
@@ -126,15 +124,14 @@
      * 指定失败的回调函数
      * 返回一个新的promise
      */
-    Promise.prototype.catch = function (onReject) {
+    catch(onReject) {
         return this.then(undefined, onReject)
     }
     /**
      * Promise的函数对象的方法 resolve reject all race 
      */
-
     //返回一个指定结果的promise
-    Promise.resolve = function (value) {
+    static resolve = function (value) {
         //返回一个失败的promise
         return new Promise((resolve, reject) => {
             if (value instanceof Promise) {
@@ -145,21 +142,19 @@
         })
 
     }
-
     //返回一个指定reason的失败promise
-    Promise.reject = function (reason) {
+    static reject = function (reason) {
         //返回一个失败的promise
         return new Promise((resolve, reject) => {
             reject(reason)
         })
     }
-
     /**
      * 
      * @param {Promise} promises 
      * 返回一个promise，当所有promise都成功时候才成功，否则失败
      */
-    Promise.all = function (promises) {
+    static all = function (promises) {
         //用来保存所有成功的数据
         const values = new Array(promises.length)
         let count = 0
@@ -183,9 +178,8 @@
         }
         )
     }
-
     //返回一个promise，结果由第一个完成的primise决定
-    Promise.race = function (promises) {
+    static race = function (promises) {
         return new Promise((resolve, reject) => {
             promises.forEach((item, index) => {
                 Promise.resolve(item).then(
@@ -199,9 +193,5 @@
             })
         })
     }
+}
 
-
-
-    //向外暴露Promise
-    window.Promise = Promise
-})(window)
